@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const consoleTable = require("console.table");
+const table = require("console.table");
 const promisemysql = require("promise-mysql");
 
 
@@ -58,7 +58,7 @@ function start() {
   })
 }
 
-function employeeSearch() {
+function employeeView() {
   connection.query("SELECT * FROM employee", function(err, res) {
       if (err) throw err;
       console.log("\n");
@@ -67,3 +67,7 @@ function employeeSearch() {
       runSearch();
   })
 };
+
+function exit() {
+  connection.end();
+}
