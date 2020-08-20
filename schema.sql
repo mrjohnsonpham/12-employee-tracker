@@ -4,14 +4,14 @@ CREATE DATABASE employees_tracker_db;
 
 USE employees_tracker_db;
 
--- Create Department table -----
+-- Create Department table
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL,
     PRIMARY KEY (id)
 );
 
--- Create Role Table -----
+-- Create Role Table 
 CREATE TABLE role (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE role (
     FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
 );
 
------ Create Employee Table -----
+-- Create Employee Table 
 CREATE TABLE employee (
     id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(30) NOT NULL,
