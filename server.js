@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const table = require("console.table");
 const promisemysql = require("promise-mysql");
+
 // create the connection information for the sql database
 var connection = mysql.createConnection({
   host: "localhost",
@@ -34,9 +35,9 @@ const start = () => {
         "View All Departments",
         "View All Roles",
         "Add Employees",
-        // "Add Department",
-        // "Add Role",
-        // "Update Employee Role",
+        "Add Department",
+        "Add Role",
+        "Update Employee Role",
         "Exit",
       ],
     })
@@ -56,6 +57,12 @@ const start = () => {
           break;
         case "Add Department":
           addDepartment();
+          break;
+        case "Add Role":
+          addRole();
+          break;
+        case "Update Employee Role":
+          updateEmployeeRole();
           break;
         case "Exit":
           exit();
@@ -102,19 +109,19 @@ function roleView() {
 // REVISIT HOW EVERYTHING WAS DONE
 function addEmployee() {
   //empty array to push inputs inside of
-  const roleList = [];
-  const roleIdList = [];
+  let employeeList = [];
+  let employeeIdList = [];
   //empty array to push inputs inside of
-  const managerList = [];
-  const managerIdList = [];
+  let managerList = [];
+  let managerIdList = [];
   connection.query("SELECT * FROM employees_tracker_db.role", function (
     err,
     res
   ) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-      roleList.push(res[i].title);
-      roleIdList.push(res[i].id.toString());
+      employeeList.push(res[i].title);
+      employeeIdList.push(res[i].id.toString());
     }
     connection.query("SELECT * FROM employees_tracker_db.employee", function (
       err,
@@ -174,28 +181,139 @@ function addEmployee() {
 }
 
 function addDepartment() {
-  inquirer
-    .prompt([
-      {
+  let departmentList = [];
+  let departmentIdList = [];
+
+  connection.query("SELECT * FROM employees_tracker_db.department", function (
+    err,
+    res
+  ) {
+    if (err) throw err;
+    for (var i = 0; i < res.length; i++) {
+      departmentList.push(res[i].name);
+      departmentIdList.push(res[i].id.toString());
+    }
+
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              name: "department",
+              message: "Enter Department Name",
+            },
+          ])
+          .then((val) => {
+            connection.query(
+              "INSERT INTO department SET ?",
+              {
+                name: val.department,
+              },
+              function (err, res) {
+                if (err) throw err;
+                console.log("\n");
+                console.log("successfully added Department");
+                console.log("\n");
+                start();
+              }
+            );
+          });
+      }
+    );
+  };
+
+// function addRole(){
+//   let roleList = [];
+//   let roleIdList = [];
+
+//   let salaryList =[];
+//   let deptIdList =[];
+
+//   connection.query("SELECT role.id, title, salary, department_id FROM role LEFT JOIN department ON role.department_id = department.id;", function (
+//     err,
+//     res
+//   ) {
+//     if (err) console.log(err);
+//     for (var i = 0; i < res.length; i++) {
+//       roleList.push(res[i].title);
+//       roleIdList.push(res[i].id.toString());
+//       salaryList.push(res[i].salary);
+//       deptIdList.push(res[i].department_id)
+//     }
+
+//         inquirer
+//           .prompt([
+//             {
+//               type: "input",
+//               name: "title",
+//               message: "Enter Role Name"
+//             },
+//             {
+//               type: "number",
+//               name: "salary",
+//               message: "Enter Salary"
+//             },
+//             {
+//               type: "input",
+//               name: "deptId",
+//               message: "Enter Department ID"
+//             },
+//           ])
+//           .then((val) => {
+//             connection.query(
+//               "INSERT INTO role SET ?",
+//               {
+//                 title: val.title,
+//               },
+//               function (err, res) {
+//                 if (err) throw err;
+//                 console.log("\n");
+//                 console.log("successfully added Role");
+//                 console.log("\n");
+//                 start();
+//               }
+//             );
+//           });
+//       }
+//     );
+//     }
+
+
+function updateEmployeeRole()
+{
+    console.log('updating emp');
+    inquirer
+      .prompt({
+        name: "id",
         type: "input",
-        name: "department",
-        message: "Enter Department Name"
-      }])
-    .then(val => {
-      connection.query("INSERT INTO department SET ?", {
-          name: val.department
-      }, function(err, res) {
-          if (err) throw err;
-          console.log("\n");
-          console.log("successfully added Department");
-          console.log("\n");
-          start();
+        message: "Enter employee id",
+      })
+      .then(function (answer) {
+        var id = answer.id;
+        inquirer
+          .prompt({
+            name: "roleId",
+            type: "input",
+            message: "Enter role id",
+          })
+          .then(function (answer) {
+            var roleId = answer.roleId;
+            var query = "UPDATE employee SET role_id=? WHERE id=?";
+            connection.query(query, [roleId, id], function (err, res) {
+              if (err) {
+                console.log(err);
+              }
+              start();
+            });
+          });
       });
-  });
+  }
+
+
+
+
+
+
+
+function exit() {
+  connection.end();
 }
-
-
-      function exit() {
-        connection.end();
-      };
-
