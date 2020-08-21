@@ -221,92 +221,92 @@ function addDepartment() {
     );
   };
 
-// function addRole(){
-//   let roleList = [];
-//   let roleIdList = [];
+function addRole(){
+  let roleList = [];
+  let roleIdList = [];
 
-//   let salaryList =[];
-//   let deptIdList =[];
+  let salaryList =[];
+  let deptIdList =[];
 
-//   connection.query("SELECT role.id, title, salary, department_id FROM role LEFT JOIN department ON role.department_id = department.id;", function (
-//     err,
-//     res
-//   ) {
-//     if (err) console.log(err);
-//     for (var i = 0; i < res.length; i++) {
-//       roleList.push(res[i].title);
-//       roleIdList.push(res[i].id.toString());
-//       salaryList.push(res[i].salary);
-//       deptIdList.push(res[i].department_id)
-//     }
+  connection.query("SELECT role.id, title, salary, department_id FROM role LEFT JOIN department ON role.department_id = department.id;", function (
+    err,
+    res
+  ) {
+    if (err) console.log(err);
+    for (var i = 0; i < res.length; i++) {
+      roleList.push(res[i].title);
+      roleIdList.push(res[i].id.toString());
+      salaryList.push(res[i].salary);
+      deptIdList.push(res[i].department_id)
+    }
 
-//         inquirer
-//           .prompt([
-//             {
-//               type: "input",
-//               name: "title",
-//               message: "Enter Role Name"
-//             },
-//             {
-//               type: "number",
-//               name: "salary",
-//               message: "Enter Salary"
-//             },
-//             {
-//               type: "input",
-//               name: "deptId",
-//               message: "Enter Department ID"
-//             },
-//           ])
-//           .then((val) => {
-//             connection.query(
-//               "INSERT INTO role SET ?",
-//               {
-//                 title: val.title,
-//               },
-//               function (err, res) {
-//                 if (err) throw err;
-//                 console.log("\n");
-//                 console.log("successfully added Role");
-//                 console.log("\n");
-//                 start();
-//               }
-//             );
-//           });
-//       }
-//     );
-//     }
-
-
-function updateEmployeeRole()
-{
-    console.log('updating emp');
-    inquirer
-      .prompt({
-        name: "id",
-        type: "input",
-        message: "Enter employee id",
-      })
-      .then(function (answer) {
-        var id = answer.id;
         inquirer
-          .prompt({
-            name: "roleId",
-            type: "input",
-            message: "Enter role id",
-          })
-          .then(function (answer) {
-            var roleId = answer.roleId;
-            var query = "UPDATE employee SET role_id=? WHERE id=?";
-            connection.query(query, [roleId, id], function (err, res) {
-              if (err) {
-                console.log(err);
+          .prompt([
+            {
+              type: "input",
+              name: "title",
+              message: "Enter Role Name"
+            },
+            {
+              type: "number",
+              name: "salary",
+              message: "Enter Salary"
+            },
+            {
+              type: "input",
+              name: "deptId",
+              message: "Enter Department ID"
+            },
+          ])
+          .then((val) => {
+            connection.query(
+              "INSERT INTO role SET ?",
+              {
+                title: val.title,
+              },
+              function (err, res) {
+                if (err) throw err;
+                console.log("\n");
+                console.log("successfully added Role");
+                console.log("\n");
+                start();
               }
-              start();
-            });
+            );
           });
-      });
-  }
+      }
+    );
+    }
+
+
+// function updateEmployeeRole()
+// {
+//     console.log('updating emp');
+//     inquirer
+//       .prompt({
+//         name: "id",
+//         type: "input",
+//         message: "Enter employee id",
+//       })
+//       .then(function (answer) {
+//         var id = answer.id;
+//         inquirer
+//           .prompt({
+//             name: "roleId",
+//             type: "input",
+//             message: "Enter role id",
+//           })
+//           .then(function (answer) {
+//             var roleId = answer.roleId;
+//             var query = "UPDATE employee SET role_id=? WHERE id=?";
+//             connection.query(query, [roleId, id], function (err, res) {
+//               if (err) {
+//                 console.log(err);
+//               }
+//               start();
+//             });
+//           });
+//       });
+//   }
 
 
 
