@@ -1,7 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const table = require("console.table");
-const promisemysql = require("promise-mysql");
+
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -136,29 +136,27 @@ const addEmployee = () => {
   //empty array to push inputs inside of
   let employeeList = [];
   let employeeIdList = [];
-  let roleList =["Lead Engineer", "Accountant", "Salesperson", "Software Engineer", "Sales Lead"];
   //empty array to push inputs inside of
   let managerList = [];
   let managerIdList = [];
   let roleIdList = [];
-  connection.query("SELECT * FROM employee_tracker_db.role", function (
-    err,
-    res
-  ) {
-    if (err) throw err;
+  connection.query("SELECT * FROM employee_tracker_db.role", function (err, res) {
+    if (err) 
+    console.log(err);
     for (var i = 0; i < res.length; i++) {
       employeeList.push(res[i].title);
       employeeIdList.push(res[i].id.toString());
+      roleIdList.push(res[i].role_id);
+
     }
-    connection.query("SELECT * FROM employee_tracker_db.employee", function (
-      err,
-      res
-    ) {
-      if (err) throw err;
+    connection.query("SELECT * FROM employee_tracker_db.employee", function (err, res) {
+      if (err) 
+      console.log(err);
       for (var i = 0; i < res.length; i++) {
         managerList.push(res[i].first_name + " " + res[i].last_name);
         managerIdList.push(res[i].id.toString());
       }
+
       // Build out the inquirer prompt to add employee's first name and last name
       inquirer
         .prompt([
@@ -173,10 +171,9 @@ const addEmployee = () => {
             message: "What is the Employee's last name?",
           },
           {
-            type: "list",
+            type: "input",
             name: "role",
             message: "What is the Employee's Role ID?",
-            choices: roleList,
           },
           {
             type: "list",
@@ -191,7 +188,7 @@ const addEmployee = () => {
             [
               val.firstName,
               val.lastName,
-              roleIdList[roleList.indexOf(val.role)],
+              val.role,
               managerIdList[managerList.indexOf(val.managerId)],
             ],
             function (err, res) {
@@ -287,11 +284,7 @@ const addRole = () => {
           ])
           .then((val) => {
             connection.query(
-              "INSERT INTO role SET ?",
-              {
-                title: val.title,
-              },
-              function (err, res) {
+              "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", [val.title, val.salary, val.deptId], function (err, res) {
                 if (err) throw err;
                 console.log("\n");
                 console.log("successfully added Role");
@@ -428,7 +421,8 @@ const roleRemove = ()  => {
   })
 }
 const deptRemove = () => {
-  const deptList = ["Engineering", "Sales", "Information Technology", "Finance"]
+  const deptList = ["Engineering", "Information Technology", "Finance"]
+  
   query = `SELECT * FROM department`;
   connection.query(query, (err, results) => {
       if (err) throw err;
@@ -448,13 +442,13 @@ const deptRemove = () => {
 }
 
 const viewBudget = () => {
-let departmentList = ["Engineering", "Sales", "Information Technology", "Finance"];
+const deptIndex = ["Engineering", "Sales", "Information Technology", "Finance", "Design"]
   inquirer
     .prompt({
       name: "dptList",
       type: "list",
       message: "Choose a department to see the budget",
-      choices: departmentList
+      choices: deptIndex
     }).then(function (response) {
       var dptList = response.dptList;
       var query = "SELECT name, SUM(salary) FROM department LEFT JOIN role ON department.id = role.department_id INNER JOIN employee ON role.id = employee.role_id GROUP BY ?;"
